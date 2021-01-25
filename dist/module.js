@@ -47678,7 +47678,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var formatLabel = function formatLabel(label) {
-  console.log('hello ', label);
   var minute = label.split(':')[1];
   if (minute == '00') return label;
   return '';
@@ -47700,7 +47699,6 @@ function (_super) {
   }
 
   MainPanel.prototype.componentDidMount = function () {
-    console.log('compare init ', this.props.data);
     var series = this.props.data.series;
     if (series.length == 0) return;
 
@@ -47911,19 +47909,6 @@ __webpack_require__.r(__webpack_exports__);
 dayjs__WEBPACK_IMPORTED_MODULE_0___default.a.extend(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1___default.a);
 dayjs__WEBPACK_IMPORTED_MODULE_0___default.a.extend(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_2___default.a);
 var processData = function processData(series) {
-  // const result: Array<{ [key: string]: any }> = series[0].fields[1].values.buffer.map((time_num) => ({
-  //   timestamp: dayjs(time_num).tz('Europe/Berlin').format('HH:mm'),
-  // }));
-  // const store_list: string[] = [];
-  // series.map((store) => {
-  //   const store_name = store.name || 'dummy';
-  //   store_list.push(store_name);
-  //   store.fields[0].values.buffer.map((value, idx) => {
-  //     //loop
-  //     result[idx][store_name] = value;
-  //   });
-  // });
-  // return { data: result, keys: store_list };
   var finger_serie = series.filter(function (serie) {
     return serie.name == 'finger';
   })[0] || [];
@@ -47943,7 +47928,6 @@ var processData = function processData(series) {
     result[idx]['From Devices'] = value;
     result[idx]['Manual Count'] = finger_serie.fields[0].values.buffer[idx];
   });
-  console.log('object ', result);
   return {
     data: result,
     keys: ['From Devices', 'Manual Count']

@@ -6,19 +6,6 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const processData = (series: Frame[]) => {
-  // const result: Array<{ [key: string]: any }> = series[0].fields[1].values.buffer.map((time_num) => ({
-  //   timestamp: dayjs(time_num).tz('Europe/Berlin').format('HH:mm'),
-  // }));
-  // const store_list: string[] = [];
-  // series.map((store) => {
-  //   const store_name = store.name || 'dummy';
-  //   store_list.push(store_name);
-  //   store.fields[0].values.buffer.map((value, idx) => {
-  //     //loop
-  //     result[idx][store_name] = value;
-  //   });
-  // });
-  // return { data: result, keys: store_list };
   const finger_serie = series.filter((serie) => serie.name == 'finger')[0] || [];
   const device_serie = series.filter((serie) => serie.name == 'device')[0] || [];
 
@@ -32,6 +19,5 @@ export const processData = (series: Frame[]) => {
     result[idx]['Manual Count'] = finger_serie.fields[0].values.buffer[idx];
   });
 
-  console.log('object ', result);
   return { data: result, keys: ['From Devices', 'Manual Count'] };
 };
