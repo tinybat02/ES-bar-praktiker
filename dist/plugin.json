@@ -1,0 +1,21 @@
+{
+  "type": "panel",
+  "name": "ES Bar Prak",
+  "id": "id-es-bar-praktiker",
+  "dataFormats": ["table"],
+  "info": {
+    "description": "ES Bar Prak",
+    "author": {
+      "name": "Nam Le"
+    },
+    "keywords": [],
+    "screenshots": [],
+    "version": "1.0.0",
+    "updated": "2021-01-25"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "6.3.x",
+    "plugins": []
+  }
+}
