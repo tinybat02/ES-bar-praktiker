@@ -6,7 +6,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const processData = (series: Frame[]) => {
-  let isEqual = true;
+  let isEqual = true,
+    isZero = true;
 
   const len_0 = series[0].length;
 
@@ -18,6 +19,15 @@ export const processData = (series: Frame[]) => {
   });
 
   if (!isEqual) return { data: [], keys: [] };
+
+  series.map((serie) => {
+    if (Math.max(...serie.fields[0].values.buffer) > 0) {
+      isZero = false;
+      return;
+    }
+  });
+
+  if (isZero) return { data: [], keys: [] };
 
   const result: Array<{ [key: string]: any }> = series[0].fields[1].values.buffer.map((time_num) => ({
     timestamp: time_num,

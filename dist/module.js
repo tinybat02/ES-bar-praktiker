@@ -47921,19 +47921,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "processData", function() { return processData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatTick", function() { return formatTick; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formalFullEpoch", function() { return formalFullEpoch; });
-/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dayjs */ "../node_modules/dayjs/dayjs.min.js");
-/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs/plugin/utc */ "../node_modules/dayjs/plugin/utc.js");
-/* harmony import */ var dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! dayjs/plugin/timezone */ "../node_modules/dayjs/plugin/timezone.js");
-/* harmony import */ var dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs */ "../node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! dayjs/plugin/utc */ "../node_modules/dayjs/plugin/utc.js");
+/* harmony import */ var dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dayjs/plugin/timezone */ "../node_modules/dayjs/plugin/timezone.js");
+/* harmony import */ var dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_3__);
 
 
 
-dayjs__WEBPACK_IMPORTED_MODULE_0___default.a.extend(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1___default.a);
-dayjs__WEBPACK_IMPORTED_MODULE_0___default.a.extend(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_2___default.a);
+
+dayjs__WEBPACK_IMPORTED_MODULE_1___default.a.extend(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_2___default.a);
+dayjs__WEBPACK_IMPORTED_MODULE_1___default.a.extend(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_3___default.a);
 var processData = function processData(series) {
-  var isEqual = true;
+  var isEqual = true,
+      isZero = true;
   var len_0 = series[0].length;
   series.map(function (serie) {
     if (serie.length != len_0) {
@@ -47942,6 +47945,16 @@ var processData = function processData(series) {
     }
   });
   if (!isEqual) return {
+    data: [],
+    keys: []
+  };
+  series.map(function (serie) {
+    if (Math.max.apply(Math, Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__spread"])(serie.fields[0].values.buffer)) > 0) {
+      isZero = false;
+      return;
+    }
+  });
+  if (isZero) return {
     data: [],
     keys: []
   };
@@ -47964,7 +47977,7 @@ var processData = function processData(series) {
   };
 };
 var formatTick = function formatTick(epoch, timezone, length) {
-  var datetime = dayjs__WEBPACK_IMPORTED_MODULE_0___default()(epoch).tz(timezone);
+  var datetime = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(epoch).tz(timezone);
   if (length <= 30) return datetime.format('HH:mm');
 
   if (length <= 150) {
@@ -47974,7 +47987,7 @@ var formatTick = function formatTick(epoch, timezone, length) {
   if (datetime.hour() == 0 && datetime.minute() == 0) return datetime.format('DD/MM 00:00');else return '';
 };
 var formalFullEpoch = function formalFullEpoch(epoch, timezone) {
-  return dayjs__WEBPACK_IMPORTED_MODULE_0___default()(epoch).tz(timezone).format('DD/MM HH:mm');
+  return dayjs__WEBPACK_IMPORTED_MODULE_1___default()(epoch).tz(timezone).format('DD/MM HH:mm');
 };
 
 /***/ }),
