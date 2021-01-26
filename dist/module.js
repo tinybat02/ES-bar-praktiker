@@ -47630,30 +47630,44 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @grafana/ui */ "@grafana/ui");
+/* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_2__);
+
+ //@ts-ignore
 
 
+var MainEditor = function MainEditor(_a) {
+  var options = _a.options,
+      onOptionsChange = _a.onOptionsChange;
 
-var MainEditor =
-/** @class */
-function (_super) {
-  Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__extends"])(MainEditor, _super);
+  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(options.timezone), 2),
+      timezone = _b[0],
+      setTimezone = _b[1];
 
-  function MainEditor() {
-    return _super !== null && _super.apply(this, arguments) || this;
-  }
-
-  MainEditor.prototype.render = function () {
-    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
-      className: "section gf-form-group"
-    }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h5", {
-      className: "section-heading"
-    }, "Display"));
+  var onSubmit = function onSubmit() {
+    onOptionsChange({
+      timezone: timezone
+    });
   };
 
-  return MainEditor;
-}(react__WEBPACK_IMPORTED_MODULE_1__["PureComponent"]);
-
-
+  return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+    className: "section gf-form-group"
+  }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h5", {
+    className: "section-heading"
+  }, "TimeZone"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_2__["FormField"], {
+    label: "TimeZone",
+    labelWidth: 10,
+    inputWidth: 40,
+    type: "text",
+    value: timezone,
+    onChange: function onChange(e) {
+      return setTimezone(e.target.value);
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+    className: "btn btn-primary",
+    onClick: onSubmit
+  }, "Set Filename"));
+};
 
 /***/ }),
 
@@ -47676,12 +47690,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-var formatLabel = function formatLabel(label) {
-  var minute = label.split(':')[1];
-  if (minute == '00') return label;
-  return '';
-};
 
 var MainPanel =
 /** @class */
@@ -47738,7 +47746,8 @@ function (_super) {
   MainPanel.prototype.render = function () {
     var _a = this.props,
         width = _a.width,
-        height = _a.height;
+        height = _a.height,
+        timezone = _a.options.timezone;
     var _b = this.state,
         data = _b.data,
         keys = _b.keys;
@@ -47794,7 +47803,7 @@ function (_super) {
             style: {
               fontSize: 10
             }
-          }, data.length <= 30 ? tick.value : formatLabel(tick.value)));
+          }, Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["formatTick"])(tick.value, timezone, data.length)));
         }
       },
       axisLeft: {
@@ -47815,6 +47824,17 @@ function (_super) {
         return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("tspan", {
           y: -8
         }, labelValue);
+      },
+      tooltip: function tooltip(_a) {
+        var id = _a.id,
+            value = _a.value,
+            color = _a.color,
+            indexValue = _a.indexValue;
+        return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("span", {
+          style: {
+            color: color
+          }
+        }, id, " - ", Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["formalFullEpoch"])(indexValue, timezone), " : ", react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("strong", null, value));
       },
       legends: [{
         dataFrom: 'keys',
@@ -47883,7 +47903,9 @@ var plugin = new _grafana_ui__WEBPACK_IMPORTED_MODULE_0__["PanelPlugin"](_MainPa
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaults", function() { return defaults; });
-var defaults = {};
+var defaults = {
+  timezone: 'Europe/Berlin'
+};
 
 /***/ }),
 
@@ -47891,12 +47913,14 @@ var defaults = {};
 /*!*************************!*\
   !*** ./util/process.ts ***!
   \*************************/
-/*! exports provided: processData */
+/*! exports provided: processData, formatTick, formalFullEpoch */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "processData", function() { return processData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatTick", function() { return formatTick; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formalFullEpoch", function() { return formalFullEpoch; });
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dayjs */ "../node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs/plugin/utc */ "../node_modules/dayjs/plugin/utc.js");
@@ -47909,29 +47933,48 @@ __webpack_require__.r(__webpack_exports__);
 dayjs__WEBPACK_IMPORTED_MODULE_0___default.a.extend(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_1___default.a);
 dayjs__WEBPACK_IMPORTED_MODULE_0___default.a.extend(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_2___default.a);
 var processData = function processData(series) {
-  var finger_serie = series.filter(function (serie) {
-    return serie.name == 'finger';
-  })[0] || [];
-  var device_serie = series.filter(function (serie) {
-    return serie.name == 'device';
-  })[0] || [];
-  if (finger_serie.length != device_serie.length) return {
+  var isEqual = true;
+  var len_0 = series[0].length;
+  series.map(function (serie) {
+    if (serie.length != len_0) {
+      isEqual = false;
+      return;
+    }
+  });
+  if (!isEqual) return {
     data: [],
     keys: []
   };
-  var result = device_serie.fields[1].values.buffer.map(function (time_num) {
+  var result = series[0].fields[1].values.buffer.map(function (time_num) {
     return {
-      timestamp: dayjs__WEBPACK_IMPORTED_MODULE_0___default()(time_num).tz('Europe/Athens').format('HH:mm')
+      timestamp: time_num
     };
   });
-  device_serie.fields[0].values.buffer.map(function (value, idx) {
-    result[idx]['From Devices'] = value;
-    result[idx]['Manual Count'] = finger_serie.fields[0].values.buffer[idx];
+  var keys = [];
+  series.map(function (serie) {
+    var group = serie.name || 'dummy';
+    keys.push(group);
+    serie.fields[0].values.buffer.map(function (value, idx) {
+      result[idx][group] = value;
+    });
   });
   return {
     data: result,
-    keys: ['From Devices', 'Manual Count']
+    keys: keys
   };
+};
+var formatTick = function formatTick(epoch, timezone, length) {
+  var datetime = dayjs__WEBPACK_IMPORTED_MODULE_0___default()(epoch).tz(timezone);
+  if (length <= 30) return datetime.format('HH:mm');
+
+  if (length <= 150) {
+    if (datetime.minute() == 0) return datetime.format('HH:mm');else return '';
+  }
+
+  if (datetime.hour() == 0 && datetime.minute() == 0) return datetime.format('DD/MM 00:00');else return '';
+};
+var formalFullEpoch = function formalFullEpoch(epoch, timezone) {
+  return dayjs__WEBPACK_IMPORTED_MODULE_0___default()(epoch).tz(timezone).format('DD/MM HH:mm');
 };
 
 /***/ }),

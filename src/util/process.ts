@@ -6,18 +6,46 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export const processData = (series: Frame[]) => {
-  const finger_serie = series.filter((serie) => serie.name == 'finger')[0] || [];
-  const device_serie = series.filter((serie) => serie.name == 'device')[0] || [];
+  let isEqual = true;
 
-  if (finger_serie.length != device_serie.length) return { data: [], keys: [] };
+  const len_0 = series[0].length;
 
-  const result: Array<{ [key: string]: any }> = device_serie.fields[1].values.buffer.map((time_num) => ({
-    timestamp: dayjs(time_num).tz('Europe/Athens').format('HH:mm'),
-  }));
-  device_serie.fields[0].values.buffer.map((value, idx) => {
-    result[idx]['From Devices'] = value;
-    result[idx]['Manual Count'] = finger_serie.fields[0].values.buffer[idx];
+  series.map((serie) => {
+    if (serie.length != len_0) {
+      isEqual = false;
+      return;
+    }
   });
 
-  return { data: result, keys: ['From Devices', 'Manual Count'] };
+  if (!isEqual) return { data: [], keys: [] };
+
+  const result: Array<{ [key: string]: any }> = series[0].fields[1].values.buffer.map((time_num) => ({
+    timestamp: time_num,
+  }));
+
+  const keys: string[] = [];
+  series.map((serie) => {
+    const group = serie.name || 'dummy';
+    keys.push(group);
+    serie.fields[0].values.buffer.map((value, idx) => {
+      result[idx][group] = value;
+    });
+  });
+
+  return { data: result, keys: keys };
+};
+
+export const formatTick = (epoch: React.Key, timezone: string, length: number) => {
+  const datetime = dayjs(epoch).tz(timezone);
+  if (length <= 30) return datetime.format('HH:mm');
+  if (length <= 150) {
+    if (datetime.minute() == 0) return datetime.format('HH:mm');
+    else return '';
+  }
+
+  if (datetime.hour() == 0 && datetime.minute() == 0) return datetime.format('DD/MM 00:00');
+  else return '';
+};
+export const formalFullEpoch = (epoch: React.Key, timezone: string) => {
+  return dayjs(epoch).tz(timezone).format('DD/MM HH:mm');
 };

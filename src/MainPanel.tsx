@@ -2,19 +2,13 @@ import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';
 import { PanelOptions, Frame } from 'types';
 import { ResponsiveBar } from '@nivo/bar';
-import { processData } from './util/process';
+import { processData, formatTick, formalFullEpoch } from './util/process';
 
 interface Props extends PanelProps<PanelOptions> {}
 interface State {
   data: Array<{ [key: string]: any }>;
   keys: Array<string>;
 }
-
-const formatLabel = (label: string) => {
-  const minute = label.split(':')[1];
-  if (minute == '00') return label;
-  return '';
-};
 
 export class MainPanel extends PureComponent<Props, State> {
   state: State = {
@@ -42,7 +36,11 @@ export class MainPanel extends PureComponent<Props, State> {
   }
 
   render() {
-    const { width, height } = this.props;
+    const {
+      width,
+      height,
+      options: { timezone },
+    } = this.props;
     const { data, keys } = this.state;
 
     if (data.length == 0) return <div>No Data</div>;
@@ -82,7 +80,7 @@ export class MainPanel extends PureComponent<Props, State> {
                       fontSize: 10,
                     }}
                   >
-                    {data.length <= 30 ? tick.value : formatLabel(tick.value)}
+                    {formatTick(tick.value, timezone, data.length)}
                   </text>
                 </g>
               );
@@ -100,6 +98,13 @@ export class MainPanel extends PureComponent<Props, State> {
           labelSkipHeight={12}
           labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
           labelFormat={(labelValue) => ((<tspan y={-8}>{labelValue}</tspan>) as unknown) as string}
+          tooltip={({ id, value, color, indexValue }) => {
+            return (
+              <span style={{ color }}>
+                {id} - {formalFullEpoch(indexValue, timezone)} : <strong>{value}</strong>
+              </span>
+            );
+          }}
           legends={[
             {
               dataFrom: 'keys',

@@ -1,8 +1,12 @@
 import { DataFrame, Field, Vector } from '@grafana/data';
 
-export interface PanelOptions {}
+export interface PanelOptions {
+  timezone: string;
+}
 
-export const defaults: PanelOptions = {};
+export const defaults: PanelOptions = {
+  timezone: 'Europe/Berlin',
+};
 
 export interface Buffer extends Vector {
   buffer: number[];
