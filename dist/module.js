@@ -47699,6 +47699,7 @@ function (_super) {
   function MainPanel() {
     var _this = _super !== null && _super.apply(this, arguments) || this;
 
+    _this.initBarOrder = null;
     _this.state = {
       data: [],
       keys: []
@@ -47709,8 +47710,9 @@ function (_super) {
   MainPanel.prototype.componentDidMount = function () {
     var series = this.props.data.series;
     if (series.length == 0) return;
+    this.initBarOrder = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
 
-    var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series),
+    var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
         data = _a.data,
         keys = _a.keys;
 
@@ -47731,8 +47733,9 @@ function (_super) {
       }
 
       var series = this.props.data.series;
+      this.initBarOrder = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
 
-      var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series),
+      var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
           data = _a.data,
           keys = _a.keys;
 
@@ -47913,7 +47916,7 @@ var defaults = {
 /*!*************************!*\
   !*** ./util/process.ts ***!
   \*************************/
-/*! exports provided: processData, formatTick, formalFullEpoch */
+/*! exports provided: processData, formatTick, formalFullEpoch, getOrder */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47921,6 +47924,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "processData", function() { return processData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatTick", function() { return formatTick; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formalFullEpoch", function() { return formalFullEpoch; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOrder", function() { return getOrder; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs */ "../node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_1__);
@@ -47934,7 +47938,7 @@ __webpack_require__.r(__webpack_exports__);
 
 dayjs__WEBPACK_IMPORTED_MODULE_1___default.a.extend(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_2___default.a);
 dayjs__WEBPACK_IMPORTED_MODULE_1___default.a.extend(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_3___default.a);
-var processData = function processData(series) {
+var processData = function processData(series, barOrder) {
   var isEqual = true,
       isZero = true;
   var len_0 = series[0].length;
@@ -47963,10 +47967,10 @@ var processData = function processData(series) {
       timestamp: time_num
     };
   });
-  var keys = [];
+  var keys = barOrder || [];
   series.map(function (serie) {
     var group = serie.name || 'dummy';
-    keys.push(group);
+    barOrder || keys.push(group);
     serie.fields[0].values.buffer.map(function (value, idx) {
       result[idx][group] = value;
     });
@@ -47988,6 +47992,25 @@ var formatTick = function formatTick(epoch, timezone, length) {
 };
 var formalFullEpoch = function formalFullEpoch(epoch, timezone) {
   return dayjs__WEBPACK_IMPORTED_MODULE_1___default()(epoch).tz(timezone).format('DD/MM HH:mm');
+};
+
+var arrCompare = function arrCompare(arr1, arr2) {
+  if (arr1.length != arr2.length) return false;
+
+  for (var i = 0; i < arr1.length; i++) {
+    if (arr1[i] != arr2[i]) return false;
+  }
+
+  return true;
+};
+
+var getOrder = function getOrder(series, previousOrder) {
+  var newOrder = series.map(function (serie) {
+    return serie.name || 'dummy';
+  });
+  if (!previousOrder) return newOrder;
+  if (arrCompare(previousOrder, newOrder)) return newOrder;
+  return previousOrder;
 };
 
 /***/ }),

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';
 import { PanelOptions, Frame } from 'types';
 import { ResponsiveBar } from '@nivo/bar';
-import { processData, formatTick, formalFullEpoch } from './util/process';
+import { processData, formatTick, formalFullEpoch, getOrder } from './util/process';
 
 interface Props extends PanelProps<PanelOptions> {}
 interface State {
@@ -11,6 +11,8 @@ interface State {
 }
 
 export class MainPanel extends PureComponent<Props, State> {
+  initBarOrder: string[] | null = null;
+
   state: State = {
     data: [],
     keys: [],
@@ -19,7 +21,8 @@ export class MainPanel extends PureComponent<Props, State> {
   componentDidMount() {
     const series = this.props.data.series as Frame[];
     if (series.length == 0) return;
-    const { data, keys } = processData(series);
+    this.initBarOrder = getOrder(series, this.initBarOrder);
+    const { data, keys } = processData(series, this.initBarOrder);
     this.setState({ data, keys });
   }
 
@@ -30,7 +33,8 @@ export class MainPanel extends PureComponent<Props, State> {
         return;
       }
       const series = this.props.data.series as Frame[];
-      const { data, keys } = processData(series);
+      this.initBarOrder = getOrder(series, this.initBarOrder);
+      const { data, keys } = processData(series, this.initBarOrder);
       this.setState({ data, keys });
     }
   }

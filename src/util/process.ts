@@ -5,7 +5,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export const processData = (series: Frame[]) => {
+export const processData = (series: Frame[], barOrder: string[]) => {
   let isEqual = true,
     isZero = true;
 
@@ -33,10 +33,10 @@ export const processData = (series: Frame[]) => {
     timestamp: time_num,
   }));
 
-  const keys: string[] = [];
+  const keys: string[] = barOrder || [];
   series.map((serie) => {
     const group = serie.name || 'dummy';
-    keys.push(group);
+    barOrder || keys.push(group);
     serie.fields[0].values.buffer.map((value, idx) => {
       result[idx][group] = value;
     });
@@ -58,4 +58,20 @@ export const formatTick = (epoch: React.Key, timezone: string, length: number) =
 };
 export const formalFullEpoch = (epoch: React.Key, timezone: string) => {
   return dayjs(epoch).tz(timezone).format('DD/MM HH:mm');
+};
+
+const arrCompare = (arr1: string[], arr2: string[]) => {
+  if (arr1.length != arr2.length) return false;
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] != arr2[i]) return false;
+  }
+  return true;
+};
+
+export const getOrder = (series: Frame[], previousOrder: string[] | null) => {
+  const newOrder = series.map((serie) => serie.name || 'dummy');
+  if (!previousOrder) return newOrder;
+  if (arrCompare(previousOrder, newOrder)) return newOrder;
+
+  return previousOrder;
 };
