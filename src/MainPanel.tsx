@@ -36,7 +36,10 @@ export class MainPanel extends PureComponent<Props, State> {
       }
       const series = this.props.data.series as Frame[];
       const order = getOrder(series, this.initBarOrder);
-      if (order.length > 1 && order[0] == order[1]) return;
+      if (order.length > 1 && order[0] == order[1]) {
+        this.setState({ data: [], keys: [] });
+        return;
+      }
       this.initBarOrder = order;
       const { data, keys } = processData(series, this.initBarOrder);
       this.setState({ data, keys });
