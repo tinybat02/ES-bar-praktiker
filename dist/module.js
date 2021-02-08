@@ -47645,9 +47645,9 @@ var MainEditor = function MainEditor(_a) {
       setTimezone = _b[1];
 
   var onSubmit = function onSubmit() {
-    onOptionsChange({
+    onOptionsChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, options), {
       timezone: timezone
-    });
+    }));
   };
 
   return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
@@ -47699,7 +47699,6 @@ function (_super) {
   function MainPanel() {
     var _this = _super !== null && _super.apply(this, arguments) || this;
 
-    _this.initBarOrder = null;
     _this.state = {
       data: [],
       keys: []
@@ -47710,11 +47709,8 @@ function (_super) {
   MainPanel.prototype.componentDidMount = function () {
     var series = this.props.data.series;
     if (series.length == 0) return;
-    var order = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
-    if (order.length > 1 && order[0] == order[1]) return;
-    this.initBarOrder = order;
 
-    var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
+    var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series),
         data = _a.data,
         keys = _a.keys;
 
@@ -47735,20 +47731,8 @@ function (_super) {
       }
 
       var series = this.props.data.series;
-      var order = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
 
-      if (order.length > 1 && order[0] == order[1]) {
-        this.initBarOrder = null;
-        this.setState({
-          data: [],
-          keys: []
-        });
-        return;
-      }
-
-      this.initBarOrder = order;
-
-      var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
+      var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series),
           data = _a.data,
           keys = _a.keys;
 
@@ -47764,10 +47748,11 @@ function (_super) {
         width = _a.width,
         height = _a.height,
         timezone = _a.options.timezone;
-    var _b = this.state,
-        data = _b.data,
-        keys = _b.keys;
-    if (data.length == 0) return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, "No Data");
+    var data = this.state.data
+    /* , keys  */
+    ;
+    var barOrder = this.props.options.barOrder;
+    if (data.length == 0 || barOrder.length == 0) return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, "No Data");
     return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
       style: {
         width: width,
@@ -47775,7 +47760,7 @@ function (_super) {
       }
     }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_nivo_bar__WEBPACK_IMPORTED_MODULE_2__["ResponsiveBar"], {
       data: data,
-      keys: keys,
+      keys: barOrder,
       indexBy: "timestamp",
       margin: {
         top: 50,
@@ -47920,7 +47905,8 @@ var plugin = new _grafana_ui__WEBPACK_IMPORTED_MODULE_0__["PanelPlugin"](_MainPa
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaults", function() { return defaults; });
 var defaults = {
-  timezone: 'Europe/Berlin'
+  timezone: 'Europe/Berlin',
+  barOrder: []
 };
 
 /***/ }),
@@ -47929,7 +47915,7 @@ var defaults = {
 /*!*************************!*\
   !*** ./util/process.ts ***!
   \*************************/
-/*! exports provided: processData, formatTick, formalFullEpoch, getOrder */
+/*! exports provided: processData, formatTick, formalFullEpoch */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47937,7 +47923,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "processData", function() { return processData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formatTick", function() { return formatTick; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "formalFullEpoch", function() { return formalFullEpoch; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOrder", function() { return getOrder; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs */ "../node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_1__);
@@ -47951,7 +47936,7 @@ __webpack_require__.r(__webpack_exports__);
 
 dayjs__WEBPACK_IMPORTED_MODULE_1___default.a.extend(dayjs_plugin_utc__WEBPACK_IMPORTED_MODULE_2___default.a);
 dayjs__WEBPACK_IMPORTED_MODULE_1___default.a.extend(dayjs_plugin_timezone__WEBPACK_IMPORTED_MODULE_3___default.a);
-var processData = function processData(series, barOrder) {
+var processData = function processData(series) {
   var isEqual = true,
       isZero = true;
   var len_0 = series[0].length;
@@ -47980,10 +47965,10 @@ var processData = function processData(series, barOrder) {
       timestamp: time_num
     };
   });
-  var keys = barOrder || [];
+  var keys = [];
   series.map(function (serie) {
     var group = serie.name || 'dummy';
-    barOrder || keys.push(group);
+    keys.push(group);
     serie.fields[0].values.buffer.map(function (value, idx) {
       result[idx][group] = value;
     });
@@ -48005,26 +47990,6 @@ var formatTick = function formatTick(epoch, timezone, length) {
 };
 var formalFullEpoch = function formalFullEpoch(epoch, timezone) {
   return dayjs__WEBPACK_IMPORTED_MODULE_1___default()(epoch).tz(timezone).format('DD/MM HH:mm');
-};
-
-var arrCompare = function arrCompare(arr1, arr2) {
-  if (arr1.length != arr2.length) return false;
-
-  for (var i = 0; i < arr1.length; i++) {
-    // if (arr1[i] != arr2[i]) return false;
-    if (!arr2.includes(arr1[i])) return false;
-  }
-
-  return true;
-};
-
-var getOrder = function getOrder(series, previousOrder) {
-  var newOrder = series.map(function (serie) {
-    return serie.name || 'dummy';
-  });
-  if (!previousOrder) return newOrder;
-  if (!arrCompare(previousOrder, newOrder)) return newOrder;
-  return previousOrder;
 };
 
 /***/ }),

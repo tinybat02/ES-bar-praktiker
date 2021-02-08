@@ -2,10 +2,12 @@ import { DataFrame, Field, Vector } from '@grafana/data';
 
 export interface PanelOptions {
   timezone: string;
+  barOrder: string[];
 }
 
 export const defaults: PanelOptions = {
   timezone: 'Europe/Berlin',
+  barOrder: [],
 };
 
 export interface Buffer extends Vector {

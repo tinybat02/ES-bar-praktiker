@@ -9,7 +9,7 @@ export const MainEditor: React.FC<PanelEditorProps<PanelOptions>> = ({ options, 
   const [timezone, setTimezone] = useState(options.timezone);
 
   const onSubmit = () => {
-    onOptionsChange({ timezone });
+    onOptionsChange({ ...options, timezone });
   };
 
   return (

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';
 import { PanelOptions, Frame } from 'types';
 import { ResponsiveBar } from '@nivo/bar';
-import { processData, formatTick, formalFullEpoch, getOrder } from './util/process';
+import { processData, formatTick, formalFullEpoch } from './util/process';
 
 interface Props extends PanelProps<PanelOptions> {}
 interface State {
@@ -11,8 +11,6 @@ interface State {
 }
 
 export class MainPanel extends PureComponent<Props, State> {
-  initBarOrder: string[] | null = null;
-
   state: State = {
     data: [],
     keys: [],
@@ -21,10 +19,8 @@ export class MainPanel extends PureComponent<Props, State> {
   componentDidMount() {
     const series = this.props.data.series as Frame[];
     if (series.length == 0) return;
-    const order = getOrder(series, this.initBarOrder);
-    if (order.length > 1 && order[0] == order[1]) return;
-    this.initBarOrder = order;
-    const { data, keys } = processData(series, this.initBarOrder);
+
+    const { data, keys } = processData(series);
     this.setState({ data, keys });
   }
 
@@ -35,14 +31,8 @@ export class MainPanel extends PureComponent<Props, State> {
         return;
       }
       const series = this.props.data.series as Frame[];
-      const order = getOrder(series, this.initBarOrder);
-      if (order.length > 1 && order[0] == order[1]) {
-        this.initBarOrder = null;
-        this.setState({ data: [], keys: [] });
-        return;
-      }
-      this.initBarOrder = order;
-      const { data, keys } = processData(series, this.initBarOrder);
+
+      const { data, keys } = processData(series);
       this.setState({ data, keys });
     }
   }
@@ -53,9 +43,10 @@ export class MainPanel extends PureComponent<Props, State> {
       height,
       options: { timezone },
     } = this.props;
-    const { data, keys } = this.state;
+    const { data /* , keys  */ } = this.state;
+    const { barOrder } = this.props.options;
 
-    if (data.length == 0) return <div>No Data</div>;
+    if (data.length == 0 || barOrder.length == 0) return <div>No Data</div>;
 
     return (
       <div
@@ -66,7 +57,7 @@ export class MainPanel extends PureComponent<Props, State> {
       >
         <ResponsiveBar
           data={data}
-          keys={keys}
+          keys={barOrder}
           indexBy="timestamp"
           margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
           padding={0.3}
