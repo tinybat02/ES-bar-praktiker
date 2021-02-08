@@ -47710,7 +47710,9 @@ function (_super) {
   MainPanel.prototype.componentDidMount = function () {
     var series = this.props.data.series;
     if (series.length == 0) return;
-    this.initBarOrder = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
+    var order = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
+    if (order.length > 1 && order[0] == order[1]) return;
+    this.initBarOrder = order;
 
     var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
         data = _a.data,
@@ -47733,7 +47735,9 @@ function (_super) {
       }
 
       var series = this.props.data.series;
-      this.initBarOrder = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
+      var order = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
+      if (order.length > 1 && order[0] == order[1]) return;
+      this.initBarOrder = order;
 
       var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
           data = _a.data,
@@ -47998,7 +48002,8 @@ var arrCompare = function arrCompare(arr1, arr2) {
   if (arr1.length != arr2.length) return false;
 
   for (var i = 0; i < arr1.length; i++) {
-    if (arr1[i] != arr2[i]) return false;
+    // if (arr1[i] != arr2[i]) return false;
+    if (!arr2.includes(arr1[i])) return false;
   }
 
   return true;

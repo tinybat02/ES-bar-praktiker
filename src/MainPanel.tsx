@@ -21,7 +21,9 @@ export class MainPanel extends PureComponent<Props, State> {
   componentDidMount() {
     const series = this.props.data.series as Frame[];
     if (series.length == 0) return;
-    this.initBarOrder = getOrder(series, this.initBarOrder);
+    const order = getOrder(series, this.initBarOrder);
+    if (order.length > 1 && order[0] == order[1]) return;
+    this.initBarOrder = order;
     const { data, keys } = processData(series, this.initBarOrder);
     this.setState({ data, keys });
   }
@@ -33,7 +35,9 @@ export class MainPanel extends PureComponent<Props, State> {
         return;
       }
       const series = this.props.data.series as Frame[];
-      this.initBarOrder = getOrder(series, this.initBarOrder);
+      const order = getOrder(series, this.initBarOrder);
+      if (order.length > 1 && order[0] == order[1]) return;
+      this.initBarOrder = order;
       const { data, keys } = processData(series, this.initBarOrder);
       this.setState({ data, keys });
     }
