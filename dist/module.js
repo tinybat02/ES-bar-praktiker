@@ -47736,7 +47736,16 @@ function (_super) {
 
       var series = this.props.data.series;
       var order = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["getOrder"])(series, this.initBarOrder);
-      if (order.length > 1 && order[0] == order[1]) return;
+
+      if (order.length > 1 && order[0] == order[1]) {
+        this.initBarOrder = null;
+        this.setState({
+          data: [],
+          keys: []
+        });
+        return;
+      }
+
       this.initBarOrder = order;
 
       var _a = Object(_util_process__WEBPACK_IMPORTED_MODULE_3__["processData"])(series, this.initBarOrder),
@@ -48014,7 +48023,7 @@ var getOrder = function getOrder(series, previousOrder) {
     return serie.name || 'dummy';
   });
   if (!previousOrder) return newOrder;
-  if (arrCompare(previousOrder, newOrder)) return newOrder;
+  if (!arrCompare(previousOrder, newOrder)) return newOrder;
   return previousOrder;
 };
 

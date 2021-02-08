@@ -73,7 +73,7 @@ const arrCompare = (arr1: string[], arr2: string[]) => {
 export const getOrder = (series: Frame[], previousOrder: string[] | null) => {
   const newOrder = series.map((serie) => serie.name || 'dummy');
   if (!previousOrder) return newOrder;
-  if (arrCompare(previousOrder, newOrder)) return newOrder;
+  if (!arrCompare(previousOrder, newOrder)) return newOrder;
 
   return previousOrder;
 };
