@@ -47982,7 +47982,7 @@ var formatTick = function formatTick(epoch, timezone, length) {
   var datetime = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(epoch).tz(timezone);
   if (length <= 30) return datetime.format('HH:mm');
 
-  if (length <= 150) {
+  if (length <= 85) {
     if (datetime.minute() == 0) return datetime.format('HH:mm');else return '';
   }
 
