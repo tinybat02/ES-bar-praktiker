@@ -40,7 +40,6 @@ export const processData = (series: Frame[]) => {
     serie.fields[0].values.buffer.map((value, idx) => {
       result[idx][group] = value;
     });
-    console.log(serie.name, serie.fields[0].values.buffer.join());
   });
 
   return { data: result, keys: keys };
