@@ -47972,6 +47972,7 @@ var processData = function processData(series) {
     serie.fields[0].values.buffer.map(function (value, idx) {
       result[idx][group] = value;
     });
+    console.log(serie.name, serie.fields[0].values.buffer);
   });
   return {
     data: result,
