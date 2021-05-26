@@ -46,6 +46,10 @@ export const processData = (series: Frame[]) => {
 };
 
 export const formatTick = (epoch: React.Key, timezone: string, length: number) => {
+  console.log('length ', length);
+  if (length > 120) {
+    return '';
+  }
   const datetime = dayjs(epoch).tz(timezone);
   if (length <= 30) return datetime.format('HH:mm');
   if (length <= 85) {

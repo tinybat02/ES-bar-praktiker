@@ -60,7 +60,7 @@ export class MainPanel extends PureComponent<Props, State> {
           keys={barOrder}
           indexBy="timestamp"
           margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-          padding={0.3}
+          padding={0.01}
           groupMode="grouped"
           valueScale={{ type: 'linear' }}
           indexScale={{ type: 'band', round: true }}
