@@ -46,7 +46,6 @@ export const processData = (series: Frame[]) => {
 };
 
 export const formatTick = (epoch: React.Key, timezone: string, length: number) => {
-  console.log('length ', length);
   if (length > 120) {
     return '';
   }

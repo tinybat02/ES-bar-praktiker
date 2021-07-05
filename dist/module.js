@@ -48251,8 +48251,6 @@ var processData = function processData(series) {
   };
 };
 var formatTick = function formatTick(epoch, timezone, length) {
-  console.log('length ', length);
-
   if (length > 120) {
     return '';
   }
